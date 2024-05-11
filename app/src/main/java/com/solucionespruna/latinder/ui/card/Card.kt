@@ -10,12 +10,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -25,9 +28,20 @@ import com.solucionespruna.latinder.ui.theme.LaTinderTheme
 
 @Composable
 fun CardScreen() {
+  val cardState by remember { mutableStateOf(true) }
+  val modifier = Modifier
+    .fillMaxSize()
+//    .background(MaterialTheme.colorScheme.background)
+    .padding(8.dp)
   Box(Modifier.background(Color.White).padding(8.dp)) {
-    Card(text = "This is the bottom card")
-    Card(text = "This is the upper card")
+    Card(modifier, text = "This is the bottom card")
+    Card(modifier
+//      .background(Color.Blue)
+      .graphicsLayer {
+        this.translationX = if (cardState) 500f else 0f
+        this.scaleX = if (cardState) 0.5f else 1f
+        this.scaleY = if (cardState) 0.5f else 1f
+      }, text = "This is the top card")
   }
 }
 
@@ -45,11 +59,8 @@ fun CardScreenPreview() {
 }
 
 @Composable
-fun Card(text: String) {
-  Column(Modifier
-      .fillMaxSize()
-      .background(MaterialTheme.colorScheme.background)
-      .padding(8.dp)) {
+fun Card(modifier: Modifier, text: String) {
+  Column(modifier) {
     Text(text = text,
       Modifier
         .fillMaxWidth()
@@ -65,13 +76,13 @@ fun Card(text: String) {
         .padding(8.dp),
       horizontalArrangement = Arrangement.spacedBy(8.dp)) {
       Button(onClick = {}, Modifier.weight(1f)) {
-        Text(text = "Like")
-      }
-      Button(onClick = {}, Modifier.weight(1f)) {
         Text(text = "Dislike")
       }
       Button(onClick = {}, Modifier.weight(1f)) {
-        Text(text = "Super Like")
+        Text(text = "undo")
+      }
+      Button(onClick = {}, Modifier.weight(1f)) {
+        Text(text = "Like")
       }
     }
   }
@@ -85,7 +96,7 @@ fun Card(text: String) {
 fun CardPreview() {
   LaTinderTheme {
     Surface {
-      Card("Test Text")
+      Card(Modifier,"Test Text")
     }
   }
 }
