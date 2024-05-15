@@ -6,10 +6,16 @@ import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -19,10 +25,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.solucionespruna.latinder.ui.theme.LaTinderTheme
 import kotlinx.coroutines.launch
 import kotlin.math.max
 import kotlin.math.min
+
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 sealed class CardAction {
   data object Like : CardAction()
@@ -31,7 +41,11 @@ sealed class CardAction {
 }
 
 @Composable
-fun CardsScreen() {
+fun CardsScreen(viewModel: CardsScreenViewModel = viewModel()) {
+
+  val uiState by viewModel.uiState.collectAsState()
+
+  val cards = uiState.cards
   var cardState: CardAction by remember { mutableStateOf(CardAction.Undo) }
   val translationX = remember { Animatable(0f) }
   val coroutineScope = rememberCoroutineScope()
@@ -54,7 +68,16 @@ fun CardsScreen() {
     Modifier
       .background(Color.White)
       .padding(8.dp)) {
-    Card(boxModifier, Modifier, text = "This is the bottom card")
+    if (cards.isEmpty()) {
+      Column {
+        Text(text = "No more cards", Modifier.fillMaxWidth())
+        Button(onClick = { viewModel.getCards() }) {
+          Text(text = "get cards")
+        }
+      }
+      return
+    }
+    Card(boxModifier, Modifier, text = cards[0])
     Card(
       modifier = Modifier
         .fillMaxSize()
@@ -85,7 +108,7 @@ fun CardsScreen() {
             }
           })
         .background(androidx.compose.ui.graphics.lerp(Color.Transparent, Color.Green, lerpFraction)),
-      text = "This is the top card") {
+      text = cards[1]) {
       cardState = CardAction.Like
     }
   }
