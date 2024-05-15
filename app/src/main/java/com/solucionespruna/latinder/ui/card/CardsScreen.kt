@@ -42,10 +42,31 @@ sealed class CardAction {
 
 @Composable
 fun CardsScreen(viewModel: CardsScreenViewModel = viewModel()) {
-
   val uiState by viewModel.uiState.collectAsState()
 
-  val cards = uiState.cards
+  if (!uiState.isLoading && !uiState.isError && uiState.cards.isEmpty()) {
+    NoCardsLayout {
+      viewModel.getCards()
+    }
+  } else {
+    CardsLayout(uiState.cards)
+  }
+}
+
+@Composable
+fun NoCardsLayout(getCards: () -> Unit) {
+  Column (Modifier.fillMaxSize()) {
+    Box(Modifier.fillMaxWidth().weight(1f), contentAlignment = androidx.compose.ui.Alignment.Center) {
+      Text(text = "No more cards")
+    }
+    Button(onClick = { getCards() }, Modifier.fillMaxWidth()) {
+      Text(text = "get cards")
+    }
+  }
+}
+
+@Composable
+fun CardsLayout(cards: List<String>) {
   var cardState: CardAction by remember { mutableStateOf(CardAction.Undo) }
   val translationX = remember { Animatable(0f) }
   val coroutineScope = rememberCoroutineScope()
@@ -62,21 +83,14 @@ fun CardsScreen(viewModel: CardsScreenViewModel = viewModel()) {
     .fillMaxSize()
     .background(MaterialTheme.colorScheme.background)
     .padding(8.dp)
-    val screenWidth = LocalContext.current.resources.displayMetrics.widthPixels.toFloat();
+  val screenWidth = LocalContext.current.resources.displayMetrics.widthPixels.toFloat();
   val lerpFraction = min(1f, max(0f, translationX.value) / screenWidth)
+
   Box(
     Modifier
       .background(Color.White)
       .padding(8.dp)) {
-    if (cards.isEmpty()) {
-      Column {
-        Text(text = "No more cards", Modifier.fillMaxWidth())
-        Button(onClick = { viewModel.getCards() }) {
-          Text(text = "get cards")
-        }
-      }
-      return
-    }
+
     Card(boxModifier, Modifier, text = cards[0])
     Card(
       modifier = Modifier
@@ -95,10 +109,10 @@ fun CardsScreen(viewModel: CardsScreenViewModel = viewModel()) {
         .draggable(draggableState, orientation = Orientation.Horizontal,
           onDragStopped = {
             coroutineScope.launch {
-              cardState = if (translationX.value > screenWidth / 2) {
+              cardState = if (translationX.value > screenWidth / 3) {
                 translationX.animateTo(screenWidth)
                 CardAction.Like
-              } else if (translationX.value < -screenWidth / 2) {
+              } else if (translationX.value < -screenWidth / 3) {
                 translationX.animateTo(-screenWidth)
                 CardAction.Dislike
               } else {
@@ -118,15 +132,29 @@ fun lerp(start: Float, stop: Float, fraction: Float): Float {
   return (1 - fraction) * start + fraction * stop
 }
 
+
 @Composable
 @Preview(
   showBackground = true,
   showSystemUi = true,
   uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
-fun CardScreenPreview() {
+fun CardsLayoutPreview() {
   LaTinderTheme {
     Surface {
-      CardsScreen()
+      CardsLayout(cards = listOf("this is the bottom card", "this is the top card"))
+    }
+  }
+}
+
+@Composable
+@Preview(
+  showBackground = true,
+  showSystemUi = true,
+  uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
+fun NoCardsLayoutPreview() {
+  LaTinderTheme {
+    Surface {
+      NoCardsLayout {}
     }
   }
 }
