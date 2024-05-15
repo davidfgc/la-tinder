@@ -1,6 +1,5 @@
 package com.solucionespruna.latinder.ui.card
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,28 +10,29 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import com.solucionespruna.latinder.R
 import com.solucionespruna.latinder.ui.theme.LaTinderTheme
 
 @Composable
-fun Card(modifier: Modifier, transitionModifier: Modifier, text: String, onLike: () -> Unit = {}) {
+fun Card(modifier: Modifier, transitionModifier: Modifier, card: Card, onLike: () -> Unit = {}) {
   Box(modifier) {
     Column(transitionModifier) {
-      Text(text = text,
+      Text(text = card.name,
         Modifier
           .fillMaxWidth()
           .padding(8.dp), textAlign = TextAlign.Center)
-      Image(
-        painterResource(id = R.drawable.ic_launcher_foreground), contentDescription = "Card Image",
-        Modifier
+      AsyncImage(
+        model = card.imageUrl, contentDescription = card.name,
+        modifier = Modifier
           .weight(1f)
-          .align(alignment = Alignment.CenterHorizontally))
+          .align(alignment = androidx.compose.ui.Alignment.CenterHorizontally),
+        placeholder = painterResource(id = R.drawable.ic_launcher_foreground))
       Row (
         Modifier
           .fillMaxWidth()
@@ -60,7 +60,7 @@ fun Card(modifier: Modifier, transitionModifier: Modifier, text: String, onLike:
 fun CardPreview() {
   LaTinderTheme {
     Surface {
-      Card(Modifier, Modifier,"Test Text")
+      Card(Modifier, Modifier,Card("Card Name", "https://randomuser.me"))
     }
   }
 }

@@ -54,8 +54,8 @@ fun CardsScreen(viewModel: CardsScreenViewModel = viewModel()) {
 }
 
 @Composable
-fun NoCardsLayout(getCards: () -> Unit) {
-  Column (Modifier.fillMaxSize()) {
+fun NoCardsLayout(modifier: Modifier = Modifier, getCards: () -> Unit) {
+  Column (modifier.fillMaxSize()) {
     Box(Modifier.fillMaxWidth().weight(1f), contentAlignment = androidx.compose.ui.Alignment.Center) {
       Text(text = "No more cards")
     }
@@ -66,7 +66,7 @@ fun NoCardsLayout(getCards: () -> Unit) {
 }
 
 @Composable
-fun CardsLayout(cards: List<String>) {
+fun CardsLayout(cards: List<Card>) {
   var cardState: CardAction by remember { mutableStateOf(CardAction.Undo) }
   val translationX = remember { Animatable(0f) }
   val coroutineScope = rememberCoroutineScope()
@@ -87,11 +87,9 @@ fun CardsLayout(cards: List<String>) {
   val lerpFraction = min(1f, max(0f, translationX.value) / screenWidth)
 
   Box(
-    Modifier
-      .background(Color.White)
-      .padding(8.dp)) {
+    Modifier.background(Color.White)) {
 
-    Card(boxModifier, Modifier, text = cards[0])
+    Card(boxModifier, Modifier, cards[0])
     Card(
       modifier = Modifier
         .fillMaxSize()
@@ -122,7 +120,7 @@ fun CardsLayout(cards: List<String>) {
             }
           })
         .background(androidx.compose.ui.graphics.lerp(Color.Transparent, Color.Green, lerpFraction)),
-      text = cards[1]) {
+      cards[1]) {
       cardState = CardAction.Like
     }
   }
@@ -141,7 +139,9 @@ fun lerp(start: Float, stop: Float, fraction: Float): Float {
 fun CardsLayoutPreview() {
   LaTinderTheme {
     Surface {
-      CardsLayout(cards = listOf("this is the bottom card", "this is the top card"))
+      CardsLayout(cards = listOf(
+        Card("this is the bottom card", "https://randomuser"),
+        Card("this is the top card", "https://randomuser")))
     }
   }
 }

@@ -17,14 +17,25 @@ class CardsScreenViewModel: ViewModel() {
     viewModelScope.launch {
       _uiState.emit(_uiState.value.copy(isLoading = true))
       _uiState.emit(_uiState.value.copy(
-        cards = listOf("this is the bottom card", "this is the top card"), isLoading = false))
+        cards = listOf(
+          Card("this is the bottom card", getRandomUserImageUrl()),
+          Card("this is the top card", getRandomUserImageUrl()),),
+        isLoading = false))
     }
   }
+
+  private fun getRandomUserImageUrl() =
+    "https://randomuser.me/api/portraits/women/${(1..100).random()}.jpg"
 }
 
 // TODO: define if screen state and data state should be separated
 data class CardsUiState(
   val isLoading: Boolean = false,
   val isError: Boolean = false,
-  val cards: List<String> = emptyList()
+  val cards: List<Card> = emptyList()
+)
+
+data class Card(
+  val name: String,
+  val imageUrl: String
 )
