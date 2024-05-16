@@ -3,9 +3,11 @@ package com.solucionespruna.latinder.ui.card
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.solucionespruna.latinder.data.UserRepositoryImpl
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 
 class CardsScreenViewModel: ViewModel() {
@@ -15,16 +17,15 @@ class CardsScreenViewModel: ViewModel() {
       get() = _uiState.asStateFlow()
 
   fun getCards() {
-    viewModelScope.launch {
+    viewModelScope.launch(Dispatchers.IO) {
       _uiState.emit(_uiState.value.copy(isLoading = true))
-      val userRepository = UserRepositoryImpl()
-      val user1 = userRepository.getUser()
-      val user2 = userRepository.getUser()
-      _uiState.emit(_uiState.value.copy(
-        cards = listOf(
-          Card(user1.name, user1.imageURL),
-          Card(user2.name, user2.imageURL),),
-        isLoading = false))
+      UserRepositoryImpl().getUsers()
+        .catch { _uiState.emit(_uiState.value.copy(isError = true))}
+        .collect {
+          _uiState.emit(_uiState.value.copy(
+            cards = it.map { user -> Card(user.name, user.imageURL) },
+            isLoading = false))
+        }
     }
   }
 }

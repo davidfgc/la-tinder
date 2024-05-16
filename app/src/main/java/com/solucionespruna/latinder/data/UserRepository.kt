@@ -1,14 +1,19 @@
 package com.solucionespruna.latinder.data
 
 import com.solucionespruna.latinder.domain.User
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
 interface UserRepository {
-  suspend fun getUser(): User
+  fun getUsers(): Flow<List<User>>
 }
 
 class UserRepositoryImpl : UserRepository {
-  override suspend fun getUser(): User {
-    val randomUser = RandomUserServiceImpl().fetchRandomUser().results?.first()
-    return RandomUserAdapter(randomUser!!).toUser()
+  override fun getUsers() = flow {
+    emit(listOf(getUser(), getUser()))
   }
+
+  private suspend fun getUser() =
+    RandomUserAdapter(RandomUserServiceImpl().fetchRandomUser().results?.first()!!).toUser()
+
 }

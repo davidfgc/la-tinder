@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -21,6 +22,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
@@ -43,20 +45,31 @@ sealed class CardAction {
 fun CardsScreen(viewModel: CardsScreenViewModel = viewModel()) {
   val uiState by viewModel.uiState.collectAsState()
 
-  if (!uiState.isLoading && uiState.cards.isNotEmpty()){
+  if (uiState.isLoading) {
+    FullSizeProgressIndicator()
+  }
+  else if (uiState.cards.isNotEmpty()){
     CardsLayout(uiState.cards)
   }
   else {
-    NoCardsLayout {
-      viewModel.getCards()
-    }
+    NoCardsLayout { viewModel.getCards() }
+  }
+}
+
+@Composable
+fun FullSizeProgressIndicator(modifier: Modifier = Modifier) {
+  Box(modifier.fillMaxSize(), contentAlignment = Alignment.Center){
+    CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
   }
 }
 
 @Composable
 fun NoCardsLayout(modifier: Modifier = Modifier, getCards: () -> Unit) {
   Column (modifier.fillMaxSize()) {
-    Box(Modifier.fillMaxWidth().weight(1f), contentAlignment = androidx.compose.ui.Alignment.Center) {
+    Box(
+      Modifier
+        .fillMaxWidth()
+        .weight(1f), contentAlignment = androidx.compose.ui.Alignment.Center) {
       Text(text = "No more cards")
     }
     Button(onClick = { getCards() }, Modifier.fillMaxWidth()) {
