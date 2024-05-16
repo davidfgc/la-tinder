@@ -1,11 +1,11 @@
-package com.solucionespruna.latinder.data
+package com.solucionespruna.latinder.data.randomuser
 
 data class RandomUser (
-  val name: RandomeUserName,
+  val name: RandomUserName,
   val picture: RandomUserPicture,
 )
 
-data class RandomeUserName (
+data class RandomUserName (
   val first: String,
   val last: String,
 )

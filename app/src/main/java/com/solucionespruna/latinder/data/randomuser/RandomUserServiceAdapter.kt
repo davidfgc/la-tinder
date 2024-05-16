@@ -1,16 +1,10 @@
-package com.solucionespruna.latinder.data
+package com.solucionespruna.latinder.data.randomuser
 
+import com.solucionespruna.latinder.domain.User
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.http.GET
-import retrofit2.http.Query
 
-interface RandomUserService {
-  @GET("api/")
-  suspend fun fetchRandomUser(@Query("gender") gender: String = "female"): RandomUserResponse
-}
-
-class RandomUserServiceImpl {
+class RandomUserServiceAdapter {
 
   private val api: Retrofit? = null
   private val service: RandomUserService? = null
@@ -25,7 +19,9 @@ class RandomUserServiceImpl {
   private fun getService(): RandomUserService {
     return service ?: getRetrofit().create(RandomUserService::class.java)
   }
-  suspend fun fetchRandomUser(): RandomUserResponse {
-    return getService().fetchRandomUser()
+  suspend fun fetchRandomUser(): User {
+    val randomUser = getService().fetchRandomUser().results!!.first()
+
+    return RandomUserAdapter(randomUser).toUser()
   }
 }

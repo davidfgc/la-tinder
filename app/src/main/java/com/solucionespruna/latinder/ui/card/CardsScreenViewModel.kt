@@ -3,6 +3,7 @@ package com.solucionespruna.latinder.ui.card
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.solucionespruna.latinder.data.UserRepositoryImpl
+import com.solucionespruna.latinder.domain.User
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -12,8 +13,8 @@ import kotlinx.coroutines.launch
 
 class CardsScreenViewModel: ViewModel() {
 
-  private val _uiState = MutableStateFlow<CardsUiState>(CardsUiState.Loading)
-  val uiState: StateFlow<CardsUiState>
+  private val _uiState = MutableStateFlow<CardsScreenUiState>(CardsScreenUiState.Loading)
+  val uiState: StateFlow<CardsScreenUiState>
       get() = _uiState.asStateFlow()
 
   init {
@@ -22,26 +23,19 @@ class CardsScreenViewModel: ViewModel() {
 
   fun getCards() {
     viewModelScope.launch(Dispatchers.IO) {
-      _uiState.emit(CardsUiState.Loading)
+      _uiState.emit(CardsScreenUiState.Loading)
       UserRepositoryImpl().getUsers()
-        .catch { _uiState.emit(CardsUiState.Error)}
+        .catch { _uiState.emit(CardsScreenUiState.Error)}
         .collect {
-          val cards = it.map { user -> Card(user.name, user.imageURL) }
-          if (cards.isEmpty()) _uiState.emit(CardsUiState.Error)
-          else _uiState.emit(CardsUiState.Content(cards))
+          if (it.isEmpty()) _uiState.emit(CardsScreenUiState.Error)
+          else _uiState.emit(CardsScreenUiState.Content(it))
         }
     }
   }
 }
 
-// TODO: define if screen state and data state should be separated
-sealed class CardsUiState {
-  data object Loading : CardsUiState()
-  data object Error : CardsUiState()
-  data class Content(val cards: List<Card>) : CardsUiState()
+sealed class CardsScreenUiState {
+  data object Loading : CardsScreenUiState()
+  data object Error : CardsScreenUiState()
+  data class Content(val users: List<User>) : CardsScreenUiState()
 }
-
-data class Card(
-  val name: String,
-  val imageUrl: String
-)

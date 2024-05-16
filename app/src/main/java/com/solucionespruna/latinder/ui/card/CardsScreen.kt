@@ -30,25 +30,20 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.solucionespruna.latinder.domain.User
 import com.solucionespruna.latinder.ui.theme.LaTinderTheme
 import kotlinx.coroutines.launch
 import kotlin.math.max
 import kotlin.math.min
-
-sealed class CardAction {
-  data object Like : CardAction()
-  data object Dislike : CardAction()
-  data object Undo : CardAction()
-}
 
 @Composable
 fun CardsScreen(viewModel: CardsScreenViewModel = viewModel()) {
   val uiState by viewModel.uiState.collectAsState()
 
   when (uiState) {
-    is CardsUiState.Loading -> FullSizeProgressIndicator()
-    is CardsUiState.Error -> NoCardsLayout { viewModel.getCards() }
-    is CardsUiState.Content -> CardsLayout((uiState as CardsUiState.Content).cards)
+    is CardsScreenUiState.Loading -> FullSizeProgressIndicator()
+    is CardsScreenUiState.Error -> NoCardsLayout { viewModel.getCards() }
+    is CardsScreenUiState.Content -> CardsLayout((uiState as CardsScreenUiState.Content).users)
   }
 }
 
@@ -75,7 +70,7 @@ fun NoCardsLayout(modifier: Modifier = Modifier, getCards: () -> Unit) {
 }
 
 @Composable
-fun CardsLayout(cards: List<Card>) {
+fun CardsLayout(users: List<User>) {
   var cardState: CardAction by remember { mutableStateOf(CardAction.Undo) }
   val translationX = remember { Animatable(0f) }
   val coroutineScope = rememberCoroutineScope()
@@ -98,7 +93,7 @@ fun CardsLayout(cards: List<Card>) {
   Box(
     Modifier.background(Color.White)) {
 
-    Card(boxModifier, Modifier, cards[0])
+    Card(boxModifier, Modifier, users[0])
     Card(
       modifier = Modifier
         .fillMaxSize()
@@ -129,16 +124,21 @@ fun CardsLayout(cards: List<Card>) {
             }
           })
         .background(androidx.compose.ui.graphics.lerp(Color.Transparent, Color.Green, lerpFraction)),
-      cards[1]) {
+      users[1]) {
       cardState = CardAction.Like
     }
   }
 }
 
+sealed class CardAction {
+  data object Like : CardAction()
+  data object Dislike : CardAction()
+  data object Undo : CardAction()
+}
+
 fun lerp(start: Float, stop: Float, fraction: Float): Float {
   return (1 - fraction) * start + fraction * stop
 }
-
 
 @Composable
 @Preview(
@@ -148,9 +148,9 @@ fun lerp(start: Float, stop: Float, fraction: Float): Float {
 fun CardsLayoutPreview() {
   LaTinderTheme {
     Surface {
-      CardsLayout(cards = listOf(
-        Card("this is the bottom card", "https://randomuser"),
-        Card("this is the top card", "https://randomuser")))
+      CardsLayout(users = listOf(
+        User("this is the bottom card", "https://randomuser"),
+        User("this is the top card", "https://randomuser")))
     }
   }
 }

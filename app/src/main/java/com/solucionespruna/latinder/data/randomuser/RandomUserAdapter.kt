@@ -1,4 +1,4 @@
-package com.solucionespruna.latinder.data
+package com.solucionespruna.latinder.data.randomuser
 
 import com.solucionespruna.latinder.domain.User
 
