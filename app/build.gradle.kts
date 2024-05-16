@@ -59,6 +59,8 @@ dependencies {
   implementation(libs.androidx.material3)
 
   implementation(libs.coil)
+  implementation(libs.retrofit)
+  implementation(libs.retrofit.gson.converter)
 
   testImplementation(libs.junit)
 

@@ -2,6 +2,7 @@ package com.solucionespruna.latinder.ui.card
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.solucionespruna.latinder.data.UserRepositoryImpl
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -16,16 +17,16 @@ class CardsScreenViewModel: ViewModel() {
   fun getCards() {
     viewModelScope.launch {
       _uiState.emit(_uiState.value.copy(isLoading = true))
+      val userRepository = UserRepositoryImpl()
+      val user1 = userRepository.getUser()
+      val user2 = userRepository.getUser()
       _uiState.emit(_uiState.value.copy(
         cards = listOf(
-          Card("this is the bottom card", getRandomUserImageUrl()),
-          Card("this is the top card", getRandomUserImageUrl()),),
+          Card(user1.name, user1.imageURL),
+          Card(user2.name, user2.imageURL),),
         isLoading = false))
     }
   }
-
-  private fun getRandomUserImageUrl() =
-    "https://randomuser.me/api/portraits/women/${(1..100).random()}.jpg"
 }
 
 // TODO: define if screen state and data state should be separated

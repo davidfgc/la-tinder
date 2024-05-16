@@ -27,12 +27,11 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.solucionespruna.latinder.ui.theme.LaTinderTheme
 import kotlinx.coroutines.launch
 import kotlin.math.max
 import kotlin.math.min
-
-import androidx.lifecycle.viewmodel.compose.viewModel
 
 sealed class CardAction {
   data object Like : CardAction()
@@ -44,12 +43,13 @@ sealed class CardAction {
 fun CardsScreen(viewModel: CardsScreenViewModel = viewModel()) {
   val uiState by viewModel.uiState.collectAsState()
 
-  if (!uiState.isLoading && !uiState.isError && uiState.cards.isEmpty()) {
+  if (!uiState.isLoading && uiState.cards.isNotEmpty()){
+    CardsLayout(uiState.cards)
+  }
+  else {
     NoCardsLayout {
       viewModel.getCards()
     }
-  } else {
-    CardsLayout(uiState.cards)
   }
 }
 
