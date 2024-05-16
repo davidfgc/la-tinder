@@ -15,5 +15,4 @@ class UserRepositoryImpl : UserRepository {
 
   private suspend fun getUser() =
     RandomUserAdapter(RandomUserServiceImpl().fetchRandomUser().results?.first()!!).toUser()
-
 }

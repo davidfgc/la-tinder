@@ -45,14 +45,10 @@ sealed class CardAction {
 fun CardsScreen(viewModel: CardsScreenViewModel = viewModel()) {
   val uiState by viewModel.uiState.collectAsState()
 
-  if (uiState.isLoading) {
-    FullSizeProgressIndicator()
-  }
-  else if (uiState.cards.isNotEmpty()){
-    CardsLayout(uiState.cards)
-  }
-  else {
-    NoCardsLayout { viewModel.getCards() }
+  when (uiState) {
+    is CardsUiState.Loading -> FullSizeProgressIndicator()
+    is CardsUiState.Error -> NoCardsLayout { viewModel.getCards() }
+    is CardsUiState.Content -> CardsLayout((uiState as CardsUiState.Content).cards)
   }
 }
 
