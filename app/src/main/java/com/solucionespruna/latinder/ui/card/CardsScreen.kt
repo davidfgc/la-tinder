@@ -42,7 +42,7 @@ fun CardsScreen(viewModel: CardsScreenViewModel = viewModel()) {
 
   when (uiState) {
     is CardsScreenUiState.Loading -> FullSizeProgressIndicator()
-    is CardsScreenUiState.Error -> NoCardsLayout { viewModel.getCards() }
+    is CardsScreenUiState.Error, is CardsScreenUiState.Empty -> NoCardsLayout { viewModel.loadUsers() }
     is CardsScreenUiState.Content -> CardsLayout((uiState as CardsScreenUiState.Content).users)
   }
 }
