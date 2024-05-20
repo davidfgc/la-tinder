@@ -6,7 +6,7 @@ import java.net.URL
 
 class RandomUserServiceAdapterTest {
   @Test
-  fun fetchRandomUserNameIsNotEmpty() = runTest {
+  fun `fetchRandomUser expects name not empty and valid URL`() = runTest {
     val randomUserServiceAdapter = RandomUserServiceAdapter()
 
     val user = randomUserServiceAdapter.fetchRandomUser()

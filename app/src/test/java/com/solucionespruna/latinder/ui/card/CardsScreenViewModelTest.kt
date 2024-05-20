@@ -23,7 +23,7 @@ class CardsScreenViewModelTest {
   }
 
   @Test
-  fun getCardsWithErrorExpectsError() = runTest {
+  fun `getCards with repository error expects ui state Error`() = runTest {
     cardsScreenViewModel.setUserRepositoryImpl(UserRepositoryErrorStub())
 
     cardsScreenViewModel.loadUsers()
@@ -32,7 +32,7 @@ class CardsScreenViewModelTest {
   }
 
   @Test
-  fun getCardsWithEmptyListExpectsEmpty() = runTest {
+  fun `getCards with repository empty list expects ui state Empty`() = runTest {
     cardsScreenViewModel.setUserRepositoryImpl(UserRepositorySuccessStub(emptyList()))
 
     cardsScreenViewModel.loadUsers()
@@ -41,7 +41,7 @@ class CardsScreenViewModelTest {
   }
 
   @Test
-  fun loadUsersWithUsersExpectsContent() = runTest {
+  fun `loadUsers with one user list response expects ui state Content with the list`() = runTest {
     val users = listOf(User( "name", "url"))
     cardsScreenViewModel.setUserRepositoryImpl(UserRepositorySuccessStub(users))
 

@@ -9,8 +9,7 @@ import kotlinx.coroutines.withContext
 class UserRemoteDataSourceImpl(
   private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
   private val randomUserServiceAdapter: RandomUserServiceAdapter = RandomUserServiceAdapter()
-)
-  : UserRepository.UserRemoteDataSource {
+) : UserRepository.UserRemoteDataSource {
 
   override fun getUsers() = flow {
     emit(listOf(getUser(), getUser()))
